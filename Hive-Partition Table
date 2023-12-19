@@ -1,0 +1,20 @@
+--load.hive
+DROP table IF EXISTS testnames;
+create table IF NOT EXISTS testnames (id int, name string) partitioned by (state string) ROW FORMAT DELIMITED FIELDS TERMINATED BY '\t';
+show partitions testnames;
+describe testnames;
+load data local inpath '/home/cloudera/hdp/pigandhive/labs/partitionandskewtables/partitionandskewtables/hivedata_ca.txt' into table testnames partition(state ='CA');
+load data local inpath '/home/cloudera/hdp/pigandhive/labs/partitionandskewtables/partitionandskewtables/hivedata_co.txt' into table testnames partition(state ='CO');
+load data local inpath '/home/cloudera/hdp/pigandhive/labs/partitionandskewtables/partitionandskewtables/hivedata_sd.txt' into table testnames partition(state ='SD');
+
+--ddl.hive
+
+select * from testnames;
+show partitions testnames;
+dfs -ls -R /user/hive/warehouse/testnames/;
+select * from testnames where state = 'CA';
+select * from testnames where state = 'CO';
+select * from testnames where state = 'SD';
+select name, state from testnames where state = 'CA';
+select name, state from testnames where state = 'CO';
+select name, state from testnames where state = 'SD';
