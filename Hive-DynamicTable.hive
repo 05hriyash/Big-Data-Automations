@@ -1,0 +1,18 @@
+drop table IF EXISTS normal_table;
+create table normal_table(id string,name string,country string) row format delimited fields terminated by '\t';
+load data local inpath '/home/cloudera/hdp/pigandhive/labs/partitionandskewtables/partitionandskewtables/Dynamic_Partition/partition_test.txt' into table normal_table;
+SET hive.exec.dynamic.partition = true;
+SET hive.exec.dynamic.partition.mode = nonstrict;
+drop table IF EXISTS dynamic_table;
+create table dynamic_table(id string,name string)partitioned by(country string) row format delimited fields terminated by '\t';
+insert overwrite table dynamic_table partition(country) select id,name,country from normal_table;
+
+
+
+select * from normal_table;
+select * from normal_table where country = 'India';
+select * from normal_table where country = 'France';
+
+select * from dynamic_table;
+select * from dynamic_table where country = 'India';
+select * from dynamic_table where country = 'France';
