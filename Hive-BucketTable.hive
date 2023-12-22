@@ -1,0 +1,14 @@
+drop table if exists d1;
+drop table if exists d2;
+
+create table d1 (c1 int,c2 string,c3 string,c4 int,c5 string) row format delimited fields terminated by ',' ;
+
+load data local inpath '/home/cloudera/shared/dept_loc.txt' into table d1;
+
+set hive.exec.dynamic.partition.mode=nonstrict;
+set hive.exec.dynamic.partition =true;
+set hive.enforce.bucketing =true;
+
+create table if not exists d2 (deptno int,ename string, sal int,location string) partitioned by (deptname string) clustered by (location) into 4 buckets row format delimited fields terminated by ',' lines terminated by '\n' stored as textfile;
+
+insert into table d2 partition(deptname) select c1,c3,c4,c5,c2 from d1;
